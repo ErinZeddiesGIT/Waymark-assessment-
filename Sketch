@@ -1,12 +1,7 @@
 -- Repository for Waymark Assessment Code -- 
 
 Deliverable:
-  Create File with following Fields:
-    patient_id (pk)
-    enrollment_start_date (pk)
-    enrollment_end_date (pk)
-    ct_outpatient_visits
-    ct_days_with_outpatient_visit
+ Word Doc with answers to questions and code used to solve them
   Answer Question:
     How many rows in patient_enrollment_span.csv?
     How many distinct values of ct_days_with_outpatient_visit in result.csv
@@ -18,12 +13,22 @@ Steps
     object_key '
     aws_access_key_id '
     aws_secret_access_key '
-
-  - Email Aaron and Gina back- get link to file? 
--USE PYTHON- 
-  - Deliverable- File with 3 columns- patient_id, enrollment_start_date, enrollment end date. Save as "patient_enrollment_span.csv"
+  *- Email Aaron and Gina back- get link to file? 
+													-USE PYTHON- 
+					- Heavily comment on code to show thought process-
+ - Deliverable- File with 3 columns- patient_id, enrollment_start_date, enrollment end date. Save as "patient_enrollment_span.csv"
     - Find for each pt id Min(date) and Max(date) 
     - seperate date column Min(date) and Max(date) in seperate columns 
       - crap I cant remember the command for this
         - Run in Jupytr
-        - Find 
+        - Find commands for dividing columns
+					- I think this can be done in one or two lines of code
+- Answer Question
+- Deliverable- 
+- Answer Question 
+- Write answers and code in word doc (format in original directions)
+- Upload to link in email from Gina
+
+-Hope and pray they think I did a good job and that they hire me - 
+
+	
