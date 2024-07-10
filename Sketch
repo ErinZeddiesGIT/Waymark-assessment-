@@ -1,0 +1,10 @@
+-- Repository for Waymark Assessment Code -- 
+
+Deliverable:
+  Create File with following Fields:
+    patient_id (pk)
+    enrollment_start_date (pk)
+    enrollment_end_date (pk)
+    ct_outpatient_visits
+    ct_days_with_outpatient_visit
+
