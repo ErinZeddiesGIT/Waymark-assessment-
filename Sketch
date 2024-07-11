@@ -26,6 +26,13 @@ Steps
         - Find commands for dividing columns
 					- I think this can be done in one or two lines of code
 *- Answer Question
+- Access File (three columns patient_id, date, outpatient_visit_count
+- Create 5 columns
+		- Patient_id (pk)
+		- enrollment_start_date (pk)
+		- enrollment_end_date
+		- ct_outpatient_visits
+		- ct_days_with_outpatient_visit
 - Deliverable- 
 - Answer Question 
 - Write answers and code in word doc (format in original directions)
