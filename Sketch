@@ -29,10 +29,17 @@ Steps
 - Access File (three columns patient_id, date, outpatient_visit_count
 - Create 5 columns
 		- Patient_id (pk)
+				Unique identifier in both patient_enrollment_span.csv and outpatient_visits_file.csv
 		- enrollment_start_date (pk)
+				from patient_enrollment_span.csv
 		- enrollment_end_date
+				from patient_enrollment_csv
 		- ct_outpatient_visits
+				The number of outpatient_visit_count.csv that happen between enrollment_start_date and enrollment_end_date
 		- ct_days_with_outpatient_visit
+				the number of unique days the pt within the enrollment period when the patient had 1 or more visits
+	- Save results as results.csv
+- count distinct values in ct_days_with_outpatient_visit
 - Deliverable- 
 - Answer Question 
 - Write answers and code in word doc (format in original directions)
