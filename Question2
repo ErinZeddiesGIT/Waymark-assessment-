@@ -1,0 +1,72 @@
+*Answer- 28
+
+import boto3
+import pandas as pd
+import os
+
+# AWS S3 configuration
+bucket_name = 'waymark-assignment'
+patient_enrollment_key = 'patient_enrollment_span.csv'
+outpatient_visits_key = 'outpatient_visits_file.csv'
+aws_access_key_id = 'AKIAZLXG4RYJBLE4OTXT'
+aws_secret_access_key = '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'
+
+# Initialize S3 client
+s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+
+# Fetch the CSV files from S3
+def fetch_csv_from_s3(bucket_name, object_key):
+    try:
+        obj = s3.get_object(Bucket=bucket_name, Key=object_key)
+        return pd.read_csv(obj['Body'], dtype=str, low_memory=False)
+    except Exception as e:
+        print(f"Error fetching object from S3: {e}")
+        raise
+
+patient_enrollment_df = fetch_csv_from_s3(bucket_name, patient_enrollment_key)
+outpatient_visits_df = fetch_csv_from_s3(bucket_name, outpatient_visits_key)
+
+# Convert 'date' column in outpatient_visits_df to datetime
+outpatient_visits_df['date'] = pd.to_datetime(outpatient_visits_df['date'], errors='coerce')
+outpatient_visits_df = outpatient_visits_df.dropna(subset=['date'])
+
+# Merge DataFrames on 'Patient_id'
+merged_df = pd.merge(patient_enrollment_df, outpatient_visits_df, left_on='Patient_id', right_on='patient_id', how='left')
+
+# Ensure 'enrollment_start_date' and 'enrollment_end_date' are datetime
+merged_df['enrollment_start_date'] = pd.to_datetime(merged_df['enrollment_start_date'], errors='coerce')
+merged_df['enrollment_end_date'] = pd.to_datetime(merged_df['enrollment_end_date'], errors='coerce')
+
+# Filter outpatient visits within the enrollment period
+merged_df = merged_df[(merged_df['date'] >= merged_df['enrollment_start_date']) & (merged_df['date'] <= merged_df['enrollment_end_date'])]
+
+# Calculate ct_outpatient_visits and ct_days_with_outpatient_visit
+result_df = merged_df.groupby(['Patient_id', 'enrollment_start_date', 'enrollment_end_date']).agg(
+    ct_outpatient_visits=('outpatient_visit_count', 'sum'),
+    ct_days_with_outpatient_visit=('date', 'nunique')
+).reset_index()
+
+# Save the result to a CSV file
+result_file = os.path.join(os.getcwd(), 'result.csv')
+try:
+    result_df.to_csv(result_file, index=False)
+    print(f"File '{result_file}' saved successfully.")
+except Exception as e:
+    print(f"Error saving file '{result_file}': {e}")
+    raise
+
+# Upload the result file to S3
+if os.path.exists(result_file):
+    try:
+        s3.upload_file(result_file, bucket_name, 'result.csv')
+        print(f"File '{result_file}' uploaded to bucket '{bucket_name}'.")
+    except Exception as e:
+        print(f"Error uploading file to S3: {e}")
+else:
+    print(f"File '{result_file}' does not exist. Unable to upload.")
+
+# Count the number of distinct values in the ct_days_with_outpatient_visit column
+distinct_ct_days = result_df['ct_days_with_outpatient_visit'].nunique()
+
+print(result_df)
+print(f"Number of distinct values in ct_days_with_outpatient_visit: {distinct_ct_days}")
