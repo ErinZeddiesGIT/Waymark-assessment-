@@ -1,0 +1,22 @@
+import boto3
+import pandas as pd
+
+# Access data
+bucket_name = 'waymark-assignment'
+object_key = 'patient_id_month_year.csv'
+aws_access_key_id = 'AKIAZLXG4RYJBLE4OTXT'
+aws_secret_access_key = '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'
+
+s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+obj = s3.get_object(Bucket=bucket_name, Key=object_key)
+data = pd.read_csv(obj['Body'])
+
+# Convert 'month_year' column to datetime
+data['month_year'] = pd.to_datetime(data['month_year'])
+
+# Group by patient_id and calculate min and max dates
+result = data.groupby('patient_id')['month_year'].agg(['min', 'max']).reset_index()
+result.columns = ['Patient_id', 'enrollment_start_date', 'enrollment_end_date']
+
+# Count the number of rows
+count = len(result)
