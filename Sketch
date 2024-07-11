@@ -14,6 +14,8 @@ Steps
     aws_access_key_id '
     aws_secret_access_key '
   *- Email Aaron and Gina back- get link to file? 
+		-end point waymark-assignment.s3.amazonaws.comwaymark-assignmentZFYGG4C666HPD21Yc5efxTA5fL9EtTMv73pzdRcKvA7dUQSSpBd1wNZRTtha6NFUg5mFL9J2L0EjgBVmMkAnnsO3/G4=
+
 													-USE PYTHON- 
 					- Heavily comment on code to show thought process-
  - Deliverable- File with 3 columns- patient_id, enrollment_start_date, enrollment end date. Save as "patient_enrollment_span.csv"
