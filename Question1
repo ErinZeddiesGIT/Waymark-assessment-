@@ -2,6 +2,7 @@
 
 import boto3
 import pandas as pd
+import os
 
 # AWS S3 configuration
 bucket_name = 'waymark-assignment'
@@ -56,15 +57,29 @@ except Exception as e:
 # Count the number of rows
 count = len(result)
 
-# Save the result to a CSV file
-result.to_csv('patient_enrollment_span.csv', index=False)
+# Define the full file path
+result_file = os.path.join(os.getcwd(), 'patient_enrollment_span.csv')
 
-# Upload the file to S3
+# Save the result to a CSV file
 try:
-    s3.upload_file('patient_enrollment_span.csv', bucket_name, 'patient_enrollment_span.csv')
-    print(f"File 'patient_enrollment_span.csv' uploaded to bucket '{bucket_name}'.")
+    print(f"Current working directory before saving: {os.getcwd()}")
+    result.to_csv(result_file, index=False)
+    print(f"File '{result_file}' saved successfully.")
 except Exception as e:
-    print(f"Error uploading file to S3: {e}")
+    print(f"Error saving file '{result_file}': {e}")
+    raise
+
+# Check if the file exists before uploading
+if os.path.exists(result_file):
+    print(f"Current working directory before uploading: {os.getcwd()}")
+    # Upload the file to S3
+    try:
+        s3.upload_file(result_file, bucket_name, 'patient_enrollment_span.csv')
+        print(f"File '{result_file}' uploaded to bucket '{bucket_name}'.")
+    except Exception as e:
+        print(f"Error uploading file to S3: {e}")
+else:
+    print(f"File '{result_file}' does not exist. Unable to upload.")
 
 print(result)
 print(f"Number of rows: {count}")
