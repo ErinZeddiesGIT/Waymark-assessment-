@@ -1,22 +1,60 @@
+#Answer- 1000
+
 import boto3
 import pandas as pd
 
-# Access data
+# AWS S3 configuration
 bucket_name = 'waymark-assignment'
 object_key = 'patient_id_month_year.csv'
 aws_access_key_id = 'AKIAZLXG4RYJBLE4OTXT'
 aws_secret_access_key = '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'
 
+# Initialize S3 client
 s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
-obj = s3.get_object(Bucket=bucket_name, Key=object_key)
-data = pd.read_csv(obj['Body'])
+
+# Fetch the object from S3
+try:
+    obj = s3.get_object(Bucket=bucket_name, Key=object_key)
+except Exception as e:
+    print(f"Error fetching object from S3: {e}")
+    raise
+
+# Load the CSV data into a DataFrame with dtype specification
+try:
+    data = pd.read_csv(obj['Body'], dtype={'patient_id': str, 'month_year': str}, low_memory=False)
+except Exception as e:
+    print(f"Error reading CSV data: {e}")
+    raise
+
+# Validate required columns
+required_columns = ['patient_id', 'month_year']
+for column in required_columns:
+    if column not in data.columns:
+        raise ValueError(f"Missing required column: {column}")
+
+# Ensure unique index for conversion
+data.reset_index(drop=True, inplace=True)
 
 # Convert 'month_year' column to datetime
-data['month_year'] = pd.to_datetime(data['month_year'])
+try:
+    data['month_year'] = pd.to_datetime(data['month_year'], errors='coerce')
+except Exception as e:
+    print(f"Error converting 'month_year' to datetime: {e}")
+    raise
+
+# Drop rows with NaT in 'month_year' column
+data = data.dropna(subset=['month_year'])
 
 # Group by patient_id and calculate min and max dates
-result = data.groupby('patient_id')['month_year'].agg(['min', 'max']).reset_index()
-result.columns = ['Patient_id', 'enrollment_start_date', 'enrollment_end_date']
+try:
+    result = data.groupby('patient_id')['month_year'].agg(['min', 'max']).reset_index()
+    result.columns = ['Patient_id', 'enrollment_start_date', 'enrollment_end_date']
+except Exception as e:
+    print(f"Error during groupby and aggregation: {e}")
+    raise
 
 # Count the number of rows
 count = len(result)
+
+print(result)
+print(f"Number of rows: {count}")
